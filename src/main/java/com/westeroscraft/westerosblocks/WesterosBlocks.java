@@ -43,10 +43,10 @@ import com.westeroscraft.westerosblocks.render.WCHalfDoorRenderer;
 import com.westeroscraft.westerosblocks.render.WCLadderRenderer;
 import com.westeroscraft.westerosblocks.render.WCStairRenderer;
 
-@Mod(modid = "WesterosBlocks", name = "WesterosBlocks", version = Version.VER)
+@Mod(modid = "WesterosBlocks", name = "UnderWesterosBlocks", version = Version.VER)
 public class WesterosBlocks
 {    
-    public static Logger log = Logger.getLogger("WesterosBlocks");
+    public static Logger log = Logger.getLogger("UnderWesterosBlocks");
     
     // The instance of your mod that Forge uses.
     @Instance("WesterosBlocks")

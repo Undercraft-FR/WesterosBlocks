@@ -1,9 +1,10 @@
 buildscript {
     repositories {
+        jcenter()
         mavenCentral()
         maven {
             name = "forge"
-            url = "http://files.minecraftforge.net/maven"
+            url = "https://maven.minecraftforge.net"
         }
         maven {
             name = "sonatype"
@@ -11,82 +12,41 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+        classpath 'com.anatawa12.forge:ForgeGradle:1.2-1.0.+'
     }
 }
 
 apply plugin: 'forge'
 
-// define the properties file
-ext.configFile = file "build.properties"
-
-configFile.withReader {
-    def prop = new Properties()
-    prop.load(it)
-    project.ext.config = new ConfigSlurper().parse prop
-}
-
-version = "${config.WesterosBlocks_version}${config.WesterosBlocks_extversion}"
-group= "com.westeroscraft" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "WesterosBlocks"
-targetCompatibility = '1.6'
-sourceCompatibility = '1.6'
-ext.buildNumber = System.getenv().BUILD_NUMBER ?: "Dev"
+version = "1.0.1"
+group = "com.westeroscraft.westerosblocks"
+archivesBaseName = "UnderWesteros"
+targetCompatibility = sourceCompatibility = JavaVersion.VERSION_1_8
 
 minecraft {
-    version = config.minecraft_version + "-" + config.forge_version
-    assetDir = "run/assets"
-
-	replaceIn "Version.java"
-    	replace "@VERSION@", config.WesterosBlocks_version + config.WesterosBlocks_extversion + '-' + project.ext.buildNumber
-    	replace "@BUILD_NUMBER@", project.ext.buildNumber
-}
-
-repositories {
-    mavenLocal()
-    maven {
-        name = "dynmap"
-        url = "http://repo.mikeprimm.com"
-    }
-}
-
-configurations {
-    westerosblocks
-    compile.extendsFrom westerosblocks
+    version = "1.7.10-10.13.4.1614-1.7.10"
+    runDir = "eclipse"
 }
 
 dependencies {
-    westerosblocks group: 'us.dynmap', name:'DynmapCoreAPI', version: "${config.Dynmap_version}", ext: 'jar'
+    implementation fileTree(dir: 'libs', include: '*.jar')
+
 }
 
-processResources
-{
-    // replace stuff in mcmod.info, nothing else
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-                
-        // replace version and mcversion
-        expand 'version':config.WesterosBlocks_version + config.WesterosBlocks_extversion + '-' + project.ext.buildNumber, 'mcversion':config.minecraft_version
+        expand 'version': project.version, 'mcversion': project.minecraft.version
     }
-        
-    // copy everything else, thats not the mcmod.info
+
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
-    }
-    // Move access transformer to META-INF
-    rename '(.+_at.cfg)', 'META-INF/$1'
-    
-}
-
-jar {
-    manifest {
-        attributes 'FMLCorePlugin': 'com.westeroscraft.westerosblocks.asm.FMLLoadingPlugin'
-        attributes 'FMLCorePluginContainsFMLMod': 'true'
-    }
-   classifier = "forge-1.7.10"
-   destinationDir = project.projectDir
-   //from { configurations.westerosblocks.collect { it.isDirectory() ? it : zipTree(it) } }
-   manifest {
-        attributes 'FMLAT': 'WesterosBlocks_at.cfg'
     }
 }
